@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+
+            background-color: #5c5670;
+        }
+    </style>
+
+    <title>ElFloater Demo</title>
+</head>
+<body>
+
+    <img class="elfloater" src="./asset/dvd.png" data-fps="30" data-vel-x="1" data-vel-y="1">
+
+    <img class="elfloater" src="./asset/eye.gif" data-vel-x="2" data-vel-y="4">
+
+    <div class="elfloater">Anything</div>
+
+    <script src="./elfloater.js"></script>
+
+    <script>
+        window.addEventListener('load', () => {
+            new ElFloaterLoader()
+        })
+    </script>
+
+</body>
+</html>
