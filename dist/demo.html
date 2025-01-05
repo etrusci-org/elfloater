@@ -25,13 +25,16 @@
 
     <img class="elfloater" src="./asset/eye.gif" data-vel-x="2" data-vel-y="4">
 
-    <div class="elfloater">Anything</div>
+    <div class="elfloater">Any HTMLElements<br>should work</div>
+
+    <div class="customselector">Custom<br>Selector</div>
 
     <script src="./elfloater.js"></script>
 
     <script>
         window.addEventListener('load', () => {
             new ElFloaterLoader()
+            new ElFloaterLoader('.customselector')
         })
     </script>
 

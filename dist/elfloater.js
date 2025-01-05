@@ -17,7 +17,7 @@ class ElFloaterLoader {
     }
 }
 class ElFloaterElement {
-    static DEFAULT = {
+    static #DEFAULT = {
         FPS: 30,
         VEL_X: 1,
         VEL_Y: 1,
@@ -49,9 +49,9 @@ class ElFloaterElement {
         this.#ele_h = ele_rect.height;
         this.#ele_pos_x = ElFloaterUtil.random_int(0, (this.#win_w * .9) - this.#ele_w);
         this.#ele_pos_y = ElFloaterUtil.random_int(0, (this.#win_h * .9) - this.#ele_h);
-        this.#fps = (ele.dataset['fps']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['fps']), 1, 1_000) : ElFloaterElement.DEFAULT.FPS;
-        this.#vel_x = (ele.dataset['velX']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velX']), 0.000_001, 1_000_000) : ElFloaterElement.DEFAULT.VEL_X;
-        this.#vel_y = (ele.dataset['velY']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velY']), 0.000_001, 1_000_000) : ElFloaterElement.DEFAULT.VEL_Y;
+        this.#fps = (ele.dataset['fps']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['fps']), 1, 1_000) : ElFloaterElement.#DEFAULT.FPS;
+        this.#vel_x = (ele.dataset['velX']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velX']), 0.000_001, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_X;
+        this.#vel_y = (ele.dataset['velY']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velY']), 0.000_001, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_Y;
         this.#raf.next = performance.now();
         this.#raf.interval = 1_000 / this.#fps;
         this.#animate();
@@ -108,9 +108,6 @@ class ElFloaterElement {
     }
 }
 class ElFloaterUtil {
-    static random_float(min, max) {
-        return Math.random() * (max - min + 1) + min;
-    }
     static random_int(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
