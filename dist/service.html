@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+
+            font-family: sans-serif;
+            font-size: 100%;
+        }
+
+        form {
+            position: absolute;
+            top: 0;
+            line-height: 2;
+            padding: 10px;
+        }
+
+        form label {
+            display: block;
+        }
+
+        form input {
+            font-size: inherit;
+            margin: 10px;
+        }
+
+        form input[type=text] {
+            width: 25rem;
+        }
+
+        form input[type=number] {
+            width: 4rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+
+    <title>ElFloater</title>
+</head>
+<body>
+
+
+    <form id="conf" action="?" method="get">
+        <label>
+            Image source:
+            <input type="text" name="img_src" placeholder="https://example.org/image.jpg" value="./asset/test.png">
+        </label>
+
+        <label>
+            Frames per second:
+            <input type="number" name="fps" min="1" value="60">
+        </label>
+
+        <label>
+            Horizontal velocity:
+            <input type="number" name="vel_x" min="0" value="2">
+        </label>
+
+        <label>
+            Vertical velocity:
+            <input type="number" name="vel_y" min="0" value="2">
+        </label>
+
+        <input type="submit" value="start">
+
+        <input type="hidden" name="hideform" value="true">
+    </form>
+
+
+    <img id="main" class="hidden" src="./asset/test.png" data-fps="60" data-vel-x="1" data-vel-y="1">
+
+
+    <script src="./elfloater.js"></script>
+
+    <script>
+        // @ts-check
+        window.addEventListener('load', () => {
+            const form = document.getElementById('conf')
+            const ele = document.getElementById('main')
+
+            if (!form || !ele) return
+
+            const request = new URL(document.location.href).searchParams
+
+            const img_src = request.get('img_src')
+            const fps = request.get('fps')
+            const vel_x = request.get('vel_x')
+            const vel_y = request.get('vel_y')
+
+            if (img_src) ele.setAttribute('src', img_src)
+            if (fps) ele.dataset['fps'] = fps
+            if (vel_x) ele.dataset['velX'] = vel_x
+            if (vel_y) ele.dataset['velY'] = vel_y
+
+            if (request.get('hideform') != 'true') return
+
+            form.classList.add('hidden')
+            ele.classList.remove('hidden')
+
+            // @ts-ignore: it's there, promise!
+            new ElFloaterLoader('#main')
+        })
+    </script>
+
+</body>
+</html>

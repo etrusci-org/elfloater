@@ -4,6 +4,11 @@ ElFloater
 
 Inspired by the original DVD logo screensaver.
 Work in progress.
+
+Todo/Ideas:
+- Maybe instead of using document.body as
+  container, use a custom element.
+- Service frontpage
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
@@ -23,9 +28,9 @@ class ElFloaterLoader
 class ElFloaterElement
 {
     static #DEFAULT: {FPS: number, VEL_X: number, VEL_Y: number} = {
-        FPS: 30,
-        VEL_X: 1,
-        VEL_Y: 1,
+        FPS: 60,
+        VEL_X: 2,
+        VEL_Y: 2,
     }
 
     #win_w!: number
@@ -67,11 +72,16 @@ class ElFloaterElement
 
         this.#fps = (ele.dataset['fps']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['fps']), 1, 1_000) : ElFloaterElement.#DEFAULT.FPS
 
-        this.#vel_x = (ele.dataset['velX']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velX']), 0.000_001, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_X
-        this.#vel_y = (ele.dataset['velY']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velY']), 0.000_001, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_Y
+        this.#vel_x = (ele.dataset['velX']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velX']), 0, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_X
+        this.#vel_y = (ele.dataset['velY']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velY']), 0, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_Y
 
         this.#raf.next = performance.now()
         this.#raf.interval = 1_000 / this.#fps
+
+        console.debug('[ElFloaterElement] ele', this.#ele)
+        console.debug('[ElFloaterElement] fps', this.#fps)
+        console.debug('[ElFloaterElement] vel_x', this.#vel_x)
+        console.debug('[ElFloaterElement] vel_y', this.#vel_y)
 
         this.#animate()
     }
