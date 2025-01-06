@@ -6,14 +6,33 @@
     <meta name="color-scheme" content="dark light">
 
     <style>
+        /* required */
+        #elfloater-container {
+            position: absolute;
+            /* width: 100vw;
+            height: 100vh; */
+            width: 600px;
+            height: 370px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* demo cosmetics only */
         body {
-            width: 100vw;
-            height: 100vh;
             padding: 0;
             margin: 0;
             overflow: hidden;
+            color: #ccc;
+            background-color: #333;
+        }
 
-            background-color: #5c5670;
+        #elfloater-container {
+            background-color: #485463;
+        }
+
+        .elfloater,
+        .customselector {
+            border: 1px solid #858f9d;
         }
     </style>
 
@@ -21,13 +40,23 @@
 </head>
 <body>
 
-    <img class="elfloater" src="./asset/dvd.png" data-fps="60" data-vel-x="2" data-vel-y="2">
+    <div id="elfloater-container">
+        floaters will be limited to this container
+    </div>
 
-    <img class="elfloater" src="./asset/eye.gif" data-vel-x="4" data-vel-y="1">
+    <img class="elfloater" src="./asset/dvd.png">
 
-    <div class="elfloater">Any HTMLElement<br>should work</div>
+    <img class="elfloater" src="./asset/eye.gif" data-fps="30" data-vel-x="1" data-vel-y="2">
 
-    <div class="customselector">Custom<br>Selector</div>
+    <button class="elfloater" data-vel-x="1" data-vel-y="0">
+        Any HTMLElement<br>
+        should work.
+    </button>
+
+    <div class="customselector" data-vel-x="0" data-vel-y="2">
+        Custom<br>
+        Selector
+    </div>
 
     <script src="./elfloater.js"></script>
 
