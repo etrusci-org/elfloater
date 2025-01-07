@@ -11,17 +11,25 @@ Todo/Ideas:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 class ElFloaterLoader {
-    constructor(ele_selector = '.elfloater', con_selector = '#elfloater-container') {
+    static #DEFAULT = {
+        ELE_SELECTOR: '.elfloater',
+        CON_SELECTOR: '#elfloater-container',
+    };
+    constructor(ele_selector, con_selector) {
+        if (!ele_selector)
+            ele_selector = ElFloaterLoader.#DEFAULT.ELE_SELECTOR;
+        if (!con_selector)
+            con_selector = ElFloaterLoader.#DEFAULT.CON_SELECTOR;
         const con = document.querySelector(con_selector);
         if (!(con instanceof HTMLElement)) {
-            console.error(`Container element '${con_selector} not found.`);
+            console.warn(`Container element '${con_selector} not found.`);
             return;
         }
-        console.debug(`[ElFloaterLoader] con_selector=${con_selector} ele_selector=${ele_selector}`);
+        console.debug(`[ElFloaterLoader] ele_selector=${ele_selector} con_selector=${con_selector}`);
         document.querySelectorAll(ele_selector).forEach(ele => {
-            if (ele instanceof HTMLElement) {
-                new ElFloaterElement(ele, con);
-            }
+            if (!(ele instanceof HTMLElement))
+                return;
+            new ElFloaterElement(ele, con);
         });
     }
 }
@@ -62,7 +70,7 @@ class ElFloaterElement {
             elapsed_time_multiplier: 1,
             elapsed_time: 0,
         };
-        console.debug(`[ElFloaterElement] ele_vel_x=${this.#ele_vel_x} ele_vel_y=${this.#ele_vel_y} ele_pos_x=${this.#ele_pos_x} ele_pos_y=${this.#ele_pos_y} ele=${this.#ele}`);
+        console.debug(`[ElFloaterElement] vel_x=${this.#ele_vel_x} vel_y=${this.#ele_vel_y} pos_x=${this.#ele_pos_x} pos_y=${this.#ele_pos_y} ele=${this.#ele}`);
         this.#move_ele();
         this.#float();
     }

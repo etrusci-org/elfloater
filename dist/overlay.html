@@ -7,8 +7,6 @@
 
     <style>
         body {
-            width: 100vw;
-            height: 100vh;
             padding: 0;
             margin: 0;
             overflow: hidden;
@@ -17,11 +15,20 @@
             font-size: 100%;
         }
 
+        h1 {
+            font-family: serif;
+        }
+
         form {
             position: absolute;
             top: 0;
             line-height: 2;
             padding: 10px;
+        }
+
+        form legend,
+        form input[type=submit] {
+            font-weight: bold;
         }
 
         form label {
@@ -44,45 +51,70 @@
         .hidden {
             display: none;
         }
+
+        #elfloater-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: transparent;
+        }
     </style>
 
     <title>ElFloater</title>
 </head>
 <body>
+    <div id="elfloater-container"></div>
+    <img id="main" class="hidden" src="./asset/test.png" data-vel-x="2" data-vel-y="2">
 
 
     <form id="conf" action="?" method="get">
-        <label>
-            Image source:
-            <input type="text" name="img_src" placeholder="https://example.org/image.jpg" value="./asset/test.png">
-        </label>
+        <h1>ElFloater</h1>
+        <fieldset>
+            <label>
+                Image source:
+                <input type="text" name="img_src" placeholder="https://example.org/image.jpg" value="./asset/test.png" placeholder="https://example.org/image.jpg" required>
+            </label>
+        </fieldset>
 
-        <label>
-            Frames per second:
-            <input type="number" name="fps" min="1" value="60">
-        </label>
+        <fieldset>
+            <legend>Velocity</legend>
+            <label>
+                Horizontal:
+                <input type="number" name="vel_x" step="0.01" value="2" required>
+            </label>
 
-        <label>
-            Horizontal velocity:
-            <input type="number" name="vel_x" min="0" value="2">
-        </label>
+            <label>
+                Vertical:
+                <input type="number" name="vel_y" step="0.01" value="2" required>
+            </label>
+        </fieldset>
 
-        <label>
-            Vertical velocity:
-            <input type="number" name="vel_y" min="0" value="2">
-        </label>
+        <fieldset>
+            <legend>Start position</legend>
+            <label>
+                Horizontal:
+                <input type="number" name="pos_x" min="0" step="0.01" value="">
+            </label>
 
-        <input type="submit" value="start">
+            <label>
+                Vertical:
+                <input type="number" name="pos_y" min="0" step="0.01" value="">
+            </label>
+
+            <small>Leave empty for random</small>
+        </fieldset>
+
+        <p>
+            <input type="submit" value="start">
+        </p>
 
         <input type="hidden" name="hideform" value="true">
     </form>
 
 
-    <img id="main" class="hidden" src="./asset/test.png" data-fps="60" data-vel-x="1" data-vel-y="1">
-
-
     <script src="./elfloater.js"></script>
-
     <script>
         // @ts-check
         window.addEventListener('load', () => {
@@ -94,14 +126,16 @@
             const request = new URL(document.location.href).searchParams
 
             const img_src = request.get('img_src')
-            const fps = request.get('fps')
             const vel_x = request.get('vel_x')
             const vel_y = request.get('vel_y')
+            const pos_x = request.get('pos_x')
+            const pos_y = request.get('pos_y')
 
             if (img_src) ele.setAttribute('src', img_src)
-            if (fps) ele.dataset['fps'] = fps
             if (vel_x) ele.dataset['velX'] = vel_x
             if (vel_y) ele.dataset['velY'] = vel_y
+            if (pos_x) ele.dataset['posX'] = pos_x
+            if (pos_y) ele.dataset['posY'] = pos_y
 
             if (request.get('hideform') != 'true') return
 
@@ -112,6 +146,5 @@
             new ElFloaterLoader('#main')
         })
     </script>
-
 </body>
 </html>

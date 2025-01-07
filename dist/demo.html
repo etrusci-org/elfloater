@@ -9,6 +9,8 @@
         /* required */
         #elfloater-container {
             position: absolute;
+            top: 0;
+            left: 0;
             /* width: 100vw;
             height: 100vh; */
             width: 600px;
@@ -31,7 +33,7 @@
         }
 
         .elfloater,
-        .customselector {
+        .custom-floater-class {
             border: 1px solid #858f9d;
         }
     </style>
@@ -46,14 +48,14 @@
 
     <img class="elfloater" src="./asset/dvd.png">
 
-    <img class="elfloater" src="./asset/eye.gif" data-vel-x="0.5" data-vel-y="3">
+    <img class="elfloater" src="./asset/test.png" data-vel-x="0.5" data-vel-y="3">
 
-    <button class="elfloater" data-vel-x="-1" data-vel-y="0">
+    <!-- <button class="elfloater" data-vel-x="-1" data-vel-y="0">
         Any HTMLElement<br>
         should work.
-    </button>
+    </button> -->
 
-    <div class="custom-selector" data-vel-x="0" data-pos-x="200" data-pos-y="100">
+    <div class="custom-floater-class" data-vel-x="0" data-pos-x="200" data-pos-y="100">
         Custom selector<br>
         Fixed start position
     </div>
@@ -63,7 +65,8 @@
     <script>
         window.addEventListener('load', () => {
             new ElFloaterLoader()
-            new ElFloaterLoader('.custom-selector')
+            new ElFloaterLoader('.custom-floater-class')
+            new ElFloaterLoader(null, '#custom-container-id')
         })
     </script>
 
