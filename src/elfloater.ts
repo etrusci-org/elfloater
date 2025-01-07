@@ -21,8 +21,11 @@ class ElFloaterLoader
             return
         }
 
+        console.debug(`[ElFloaterLoader] con_selector=${con_selector} ele_selector=${ele_selector}`)
+
         document.querySelectorAll(ele_selector).forEach(ele => {
             if (ele instanceof HTMLElement) {
+                // console.debug(`[ElFloaterLoader] loading ${ele}`)
                 new ElFloaterElement(ele, con)
             }
         })
@@ -32,33 +35,34 @@ class ElFloaterLoader
 
 class ElFloaterElement
 {
-    static #DEFAULT: {FPS: number, VEL_X: number, VEL_Y: number} = {
-        FPS: 60,
-        VEL_X: 1,
-        VEL_Y: 1,
+
+    static #DEFAULT: {
+        ELE_VEL_X: number
+        ELE_VEL_Y: number
+    } = {
+        ELE_VEL_X: 0.5,
+        ELE_VEL_Y: 0.5,
     }
 
-    #con_w!: number
-    #con_h!: number
+    #fps: number = 60
 
     #con: HTMLElement
+    #con_w!: number
+    #con_h!: number
 
     #ele: HTMLElement
     #ele_w: number
     #ele_h: number
     #ele_pos_x: number
     #ele_pos_y: number
+    #ele_vel_x: number
+    #ele_vel_y: number
 
-    #fps: number
-
-    #vel_x: number
-    #vel_y: number
-
-    #raf: {now: number, next: number, interval: number, elapsed: number} = {
-        now: 0,
-        next: 0,
-        interval: 0,
-        elapsed: 0,
+    #raf: {
+        previous_time: number
+        frame_interval: number
+        elapsed_time_multiplier: number
+        elapsed_time: number
     }
 
 
@@ -71,26 +75,28 @@ class ElFloaterElement
 
         ele.style.display = 'inline-block'
         ele.style.position = 'absolute'
+
         const ele_rect: DOMRect = ele.getBoundingClientRect()
 
         this.#ele = ele
         this.#ele_w = ele_rect.width
         this.#ele_h = ele_rect.height
-        this.#ele_pos_x = ElFloaterUtil.random_int(0, (this.#con_w * .9) - this.#ele_w)
-        this.#ele_pos_y = ElFloaterUtil.random_int(0, (this.#con_h * .9) - this.#ele_h)
+        this.#ele_pos_x = (ele.dataset['posX']) ? Math.max(0, Number(ele.dataset['posX'])) : ElFloaterUtil.random_int(0, (this.#con_w * .9) - this.#ele_w)
+        this.#ele_pos_y = (ele.dataset['posY']) ? Math.max(0, Number(ele.dataset['posY'])) : ElFloaterUtil.random_int(0, (this.#con_h * .9) - this.#ele_h)
+        this.#ele_vel_x = (ele.dataset['velX']) ? Number(ele.dataset['velX']) : ElFloaterElement.#DEFAULT.ELE_VEL_X
+        this.#ele_vel_y = (ele.dataset['velY']) ? Number(ele.dataset['velY']) : ElFloaterElement.#DEFAULT.ELE_VEL_Y
 
-        this.#fps = (ele.dataset['fps']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['fps']), 1, 1_000) : ElFloaterElement.#DEFAULT.FPS
+        this.#raf = {
+            previous_time: performance.now(),
+            frame_interval: 1_000 / this.#fps,
+            elapsed_time_multiplier: 1,
+            elapsed_time: 0,
+        }
 
-        this.#vel_x = (ele.dataset['velX']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velX']), 0, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_X
-        this.#vel_y = (ele.dataset['velY']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velY']), 0, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_Y
-
-        this.#raf.next = performance.now()
-        this.#raf.interval = 1_000 / this.#fps
-
-        console.debug('[ElFloaterElement]', this.#ele, this.#fps, this.#vel_x, this.#vel_y)
+        console.debug(`[ElFloaterElement] ele_vel_x=${this.#ele_vel_x} ele_vel_y=${this.#ele_vel_y} ele_pos_x=${this.#ele_pos_x} ele_pos_y=${this.#ele_pos_y} ele=${this.#ele}`)
 
         this.#move_ele()
-        this.#animate()
+        this.#float()
     }
 
 
@@ -100,8 +106,6 @@ class ElFloaterElement
 
         this.#con_w = con_rect.width
         this.#con_h = con_rect.height
-
-        console.debug(this.#con_w, this.#con_h)
     }
 
 
@@ -118,56 +122,56 @@ class ElFloaterElement
     }
 
 
-    #animate(): void
+    #float(): void
     {
-        window.requestAnimationFrame(() => {
-            this.#animate()
-        })
+        const tick = (timestamp: number = 0): void => {
+            this.#raf.elapsed_time = timestamp - this.#raf.previous_time
+            this.#raf.elapsed_time_multiplier = this.#raf.elapsed_time / this.#raf.frame_interval
 
-        this.#raf.now = performance.now()
-        this.#raf.elapsed = this.#raf.now - this.#raf.next
+            this.#move_ele()
+            this.#handle_ele_collision()
+            this.#set_next_ele_position()
 
-        if (this.#raf.elapsed <= this.#raf.interval) return
+            this.#raf.previous_time = timestamp
 
-        this.#raf.next = this.#raf.now - (this.#raf.elapsed % this.#raf.interval)
+            window.requestAnimationFrame(tick)
+        }
 
-        this.#move_ele()
-        this.#change_ele_direction_on_collision()
-        this.#set_next_ele_position()
+        tick(0)
     }
 
 
     #move_ele(): void
     {
-        this.#ele.style.transform = `translate(${this.#ele_pos_x}px, ${this.#ele_pos_y}px)`
+        this.#ele.style.setProperty('transform', `translate(${this.#ele_pos_x}px, ${this.#ele_pos_y}px)`)
     }
 
 
     #set_next_ele_position(): void
     {
-        this.#ele_pos_x += this.#vel_x
-        this.#ele_pos_y += this.#vel_y
+        this.#ele_pos_x += this.#ele_vel_x * this.#raf.elapsed_time_multiplier
+        this.#ele_pos_y += this.#ele_vel_y * this.#raf.elapsed_time_multiplier
     }
 
 
-    #change_ele_direction_on_collision(): void
+    #handle_ele_collision(): void
     {
         if (this.#ele_pos_x + this.#ele_w > this.#con_w) {
             this.#ele_pos_x = this.#con_w - this.#ele_w
-            this.#vel_x = -this.#vel_x
+            this.#ele_vel_x = -this.#ele_vel_x
         }
         else if (this.#ele_pos_x < 0) {
             this.#ele_pos_x = 0
-            this.#vel_x = -this.#vel_x
+            this.#ele_vel_x = -this.#ele_vel_x
         }
 
         if (this.#ele_pos_y + this.#ele_h > this.#con_h) {
             this.#ele_pos_y = this.#con_h - this.#ele_h
-            this.#vel_y = -this.#vel_y
+            this.#ele_vel_y = -this.#ele_vel_y
         }
         else if (this.#ele_pos_y < 0) {
             this.#ele_pos_y = 0
-            this.#vel_y = -this.#vel_y
+            this.#ele_vel_y = -this.#ele_vel_y
         }
     }
 }
@@ -189,8 +193,8 @@ class ElFloaterUtil
     }
 
 
-    static clamp_number(num: number, min: number, max: number): number
-    {
-        return Math.max(min, Math.min(num, max))
-    }
+    // static clamp_number(num: number, min: number, max: number): number
+    // {
+    //     return Math.max(min, Math.min(num, max))
+    // }
 }

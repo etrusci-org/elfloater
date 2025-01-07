@@ -17,6 +17,7 @@ class ElFloaterLoader {
             console.error(`Container element '${con_selector} not found.`);
             return;
         }
+        console.debug(`[ElFloaterLoader] con_selector=${con_selector} ele_selector=${ele_selector}`);
         document.querySelectorAll(ele_selector).forEach(ele => {
             if (ele instanceof HTMLElement) {
                 new ElFloaterElement(ele, con);
@@ -26,27 +27,21 @@ class ElFloaterLoader {
 }
 class ElFloaterElement {
     static #DEFAULT = {
-        FPS: 60,
-        VEL_X: 1,
-        VEL_Y: 1,
+        ELE_VEL_X: 0.5,
+        ELE_VEL_Y: 0.5,
     };
+    #fps = 60;
+    #con;
     #con_w;
     #con_h;
-    #con;
     #ele;
     #ele_w;
     #ele_h;
     #ele_pos_x;
     #ele_pos_y;
-    #fps;
-    #vel_x;
-    #vel_y;
-    #raf = {
-        now: 0,
-        next: 0,
-        interval: 0,
-        elapsed: 0,
-    };
+    #ele_vel_x;
+    #ele_vel_y;
+    #raf;
     constructor(ele, con) {
         this.#con = con;
         this.#set_con_size();
@@ -57,22 +52,24 @@ class ElFloaterElement {
         this.#ele = ele;
         this.#ele_w = ele_rect.width;
         this.#ele_h = ele_rect.height;
-        this.#ele_pos_x = ElFloaterUtil.random_int(0, (this.#con_w * .9) - this.#ele_w);
-        this.#ele_pos_y = ElFloaterUtil.random_int(0, (this.#con_h * .9) - this.#ele_h);
-        this.#fps = (ele.dataset['fps']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['fps']), 1, 1_000) : ElFloaterElement.#DEFAULT.FPS;
-        this.#vel_x = (ele.dataset['velX']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velX']), 0, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_X;
-        this.#vel_y = (ele.dataset['velY']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['velY']), 0, 1_000_000) : ElFloaterElement.#DEFAULT.VEL_Y;
-        this.#raf.next = performance.now();
-        this.#raf.interval = 1_000 / this.#fps;
-        console.debug('[ElFloaterElement]', this.#ele, this.#fps, this.#vel_x, this.#vel_y);
+        this.#ele_pos_x = (ele.dataset['posX']) ? Math.max(0, Number(ele.dataset['posX'])) : ElFloaterUtil.random_int(0, (this.#con_w * .9) - this.#ele_w);
+        this.#ele_pos_y = (ele.dataset['posY']) ? Math.max(0, Number(ele.dataset['posY'])) : ElFloaterUtil.random_int(0, (this.#con_h * .9) - this.#ele_h);
+        this.#ele_vel_x = (ele.dataset['velX']) ? Number(ele.dataset['velX']) : ElFloaterElement.#DEFAULT.ELE_VEL_X;
+        this.#ele_vel_y = (ele.dataset['velY']) ? Number(ele.dataset['velY']) : ElFloaterElement.#DEFAULT.ELE_VEL_Y;
+        this.#raf = {
+            previous_time: performance.now(),
+            frame_interval: 1_000 / this.#fps,
+            elapsed_time_multiplier: 1,
+            elapsed_time: 0,
+        };
+        console.debug(`[ElFloaterElement] ele_vel_x=${this.#ele_vel_x} ele_vel_y=${this.#ele_vel_y} ele_pos_x=${this.#ele_pos_x} ele_pos_y=${this.#ele_pos_y} ele=${this.#ele}`);
         this.#move_ele();
-        this.#animate();
+        this.#float();
     }
     #set_con_size() {
         const con_rect = this.#con.getBoundingClientRect();
         this.#con_w = con_rect.width;
         this.#con_h = con_rect.height;
-        console.debug(this.#con_w, this.#con_h);
     }
     #watch_con_size() {
         let delay;
@@ -82,42 +79,41 @@ class ElFloaterElement {
         });
         O.observe(this.#con);
     }
-    #animate() {
-        window.requestAnimationFrame(() => {
-            this.#animate();
-        });
-        this.#raf.now = performance.now();
-        this.#raf.elapsed = this.#raf.now - this.#raf.next;
-        if (this.#raf.elapsed <= this.#raf.interval)
-            return;
-        this.#raf.next = this.#raf.now - (this.#raf.elapsed % this.#raf.interval);
-        this.#move_ele();
-        this.#change_ele_direction_on_collision();
-        this.#set_next_ele_position();
+    #float() {
+        const tick = (timestamp = 0) => {
+            this.#raf.elapsed_time = timestamp - this.#raf.previous_time;
+            this.#raf.elapsed_time_multiplier = this.#raf.elapsed_time / this.#raf.frame_interval;
+            this.#move_ele();
+            this.#handle_ele_collision();
+            this.#set_next_ele_position();
+            this.#raf.previous_time = timestamp;
+            window.requestAnimationFrame(tick);
+        };
+        tick(0);
     }
     #move_ele() {
-        this.#ele.style.transform = `translate(${this.#ele_pos_x}px, ${this.#ele_pos_y}px)`;
+        this.#ele.style.setProperty('transform', `translate(${this.#ele_pos_x}px, ${this.#ele_pos_y}px)`);
     }
     #set_next_ele_position() {
-        this.#ele_pos_x += this.#vel_x;
-        this.#ele_pos_y += this.#vel_y;
+        this.#ele_pos_x += this.#ele_vel_x * this.#raf.elapsed_time_multiplier;
+        this.#ele_pos_y += this.#ele_vel_y * this.#raf.elapsed_time_multiplier;
     }
-    #change_ele_direction_on_collision() {
+    #handle_ele_collision() {
         if (this.#ele_pos_x + this.#ele_w > this.#con_w) {
             this.#ele_pos_x = this.#con_w - this.#ele_w;
-            this.#vel_x = -this.#vel_x;
+            this.#ele_vel_x = -this.#ele_vel_x;
         }
         else if (this.#ele_pos_x < 0) {
             this.#ele_pos_x = 0;
-            this.#vel_x = -this.#vel_x;
+            this.#ele_vel_x = -this.#ele_vel_x;
         }
         if (this.#ele_pos_y + this.#ele_h > this.#con_h) {
             this.#ele_pos_y = this.#con_h - this.#ele_h;
-            this.#vel_y = -this.#vel_y;
+            this.#ele_vel_y = -this.#ele_vel_y;
         }
         else if (this.#ele_pos_y < 0) {
             this.#ele_pos_y = 0;
-            this.#vel_y = -this.#vel_y;
+            this.#ele_vel_y = -this.#ele_vel_y;
         }
     }
 }
@@ -126,8 +122,5 @@ class ElFloaterUtil {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-    static clamp_number(num, min, max) {
-        return Math.max(min, Math.min(num, max));
     }
 }

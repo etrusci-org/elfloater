@@ -46,16 +46,16 @@
 
     <img class="elfloater" src="./asset/dvd.png">
 
-    <img class="elfloater" src="./asset/eye.gif" data-fps="30" data-vel-x="1" data-vel-y="2">
+    <img class="elfloater" src="./asset/eye.gif" data-vel-x="0.5" data-vel-y="3">
 
-    <button class="elfloater" data-vel-x="1" data-vel-y="0">
+    <button class="elfloater" data-vel-x="-1" data-vel-y="0">
         Any HTMLElement<br>
         should work.
     </button>
 
-    <div class="customselector" data-vel-x="0" data-vel-y="2">
-        Custom<br>
-        Selector
+    <div class="custom-selector" data-vel-x="0" data-pos-x="200" data-pos-y="100">
+        Custom selector<br>
+        Fixed start position
     </div>
 
     <script src="./elfloater.js"></script>
@@ -63,7 +63,7 @@
     <script>
         window.addEventListener('load', () => {
             new ElFloaterLoader()
-            new ElFloaterLoader('.customselector')
+            new ElFloaterLoader('.custom-selector')
         })
     </script>
 
