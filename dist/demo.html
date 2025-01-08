@@ -6,35 +6,35 @@
     <meta name="color-scheme" content="dark light">
 
     <style>
-        /* required */
+        /* REQUIRED */
         #elfloater-container {
             position: absolute;
             top: 0;
             left: 0;
             /* width: 100vw;
             height: 100vh; */
-            width: 600px;
-            height: 370px;
+            width: 840px;
+            height: 420px;
             max-width: 100%;
             max-height: 100%;
         }
 
-        /* demo cosmetics only */
+        /* DEMO COSMETICS ONLY */
         body {
             padding: 0;
             margin: 0;
             overflow: hidden;
             color: #ccc;
-            background-color: #333;
+            background-color: black;
         }
 
         #elfloater-container {
-            background-color: #485463;
+            background-color: rebeccapurple;
         }
 
         .elfloater,
         .custom-floater-class {
-            border: 1px solid #858f9d;
+            border: 1px solid pink;
         }
     </style>
 
@@ -42,23 +42,30 @@
 </head>
 <body>
 
+    <!-- Container -->
+
     <div id="elfloater-container">
         floaters will be limited to this container
     </div>
+
+
+    <!-- Floaters -->
 
     <img class="elfloater" src="./asset/dvd.png">
 
     <img class="elfloater" src="./asset/test.png" data-vel-x="0.5" data-vel-y="3">
 
-    <!-- <button class="elfloater" data-vel-x="-1" data-vel-y="0">
+    <button class="elfloater" data-vel-x="-1" data-vel-y="0">
         Any HTMLElement<br>
-        should work.
-    </button> -->
+        should work
+    </button>
 
     <div class="custom-floater-class" data-vel-x="0" data-pos-x="200" data-pos-y="100">
-        Custom selector<br>
-        Fixed start position
+        Custom selector
     </div>
+
+
+    <!-- Script + Auto-Loader -->
 
     <script src="./elfloater.js"></script>
 
@@ -66,7 +73,6 @@
         window.addEventListener('load', () => {
             new ElFloaterLoader()
             new ElFloaterLoader('.custom-floater-class')
-            new ElFloaterLoader(null, '#custom-container-id')
         })
     </script>
 

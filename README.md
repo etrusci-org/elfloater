@@ -1,17 +1,25 @@
 # ElFloater
 
 Let [HTMLElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)'s float around in a container.
-Inspired by the original DVD logo screensaver.
+Inspired by the original DVD screensaver from the early 2000s.
 
 
 
 
 ## Usage
 
+The following shows you how to create your own HTML page with one or more floating elements.
+For a working demo/starter template open **[dist/demo.html](./dist/demo.html)** in your webbrowser. Works from the filesystem and does not have to be put on a webserver.
+
+Advanced users could also use the individual classes directly. Please see [./src/elfloater.ts](./src/elfloater.ts) for more.
+- `ElFloaterLoader`
+- `ElFloaterElement`
+- `ElFloaterUtil`
+
 
 ### 1. Create a container for the floaters
 
-Default id for the container is `elfloater-container`.
+Default selector for the container is an **id** named `elfloater-container`. There can only be one container.
 
 ```html
 <!-- With default id -->
@@ -19,13 +27,12 @@ Default id for the container is `elfloater-container`.
 
 <!-- With custom id -->
 <div id="custom-container-id"></div>
-
 ```
 
 Add CSS for the container.
 
 ```css
-/* Option 1: Fullscreen */
+/* Option 1: Use whole viewport */
 #elfloater-container {
     position: absolute;
     top: 0;
@@ -34,7 +41,7 @@ Add CSS for the container.
     height: 100vh;
 }
 
-/* Option 2: Fixed with but scales for smaller viewport */
+/* Option 2: Fixed width/height but scales down for smaller viewport */
 #elfloater-container {
     position: absolute;
     top: 0;
@@ -56,13 +63,13 @@ body {
 
 ### 2. Create one or more elements
 
-The following options can be passed via data attributes:
-- `data-vel-x`: *float* Horizontal velocity
-- `data-vel-y`: *float* Vertical velocity
-- `data-pos-x`: *float* Horizontal start position
-- `data-pos-y`: *float* Vertical start position
+Default selector for the floater elements is a **class** named `elfloater`.
 
-Default class for the floater elements is `elfloater`.
+The following options can be passed via data attributes. The order does not matter. If they are omitted, default values will be used:
+- *float* `data-vel-x`: Horizontal velocity
+- *float* `data-vel-y`: Vertical velocity
+- *float* `data-pos-x`: Horizontal start position
+- *float* `data-pos-y`: Vertical start position
 
 ```html
 <img class="elfloater" src="./asset/dvd.png">
@@ -75,25 +82,30 @@ Default class for the floater elements is `elfloater`.
 </button>
 
 <div class="custom-floater-class" data-vel-x="0" data-pos-x="200" data-pos-y="100">
-    Custom selector<br>
+    Custom floater class<br>
     Fixed start position
 </div>
 ```
 
 
-### 3. Auto-load/start floaters after page is loaded
+### 3. Include script and auto-load/start floaters after page is loaded
 
 `ElFloaterLoader` takes two optional (nullable) arguments:
-1. Element selector
-2. Container selector
+1. *string* `ele_selector`: Floater element class
+2. *string* `con_selector`: Container element id
 
 ```html
 <script src="./elfloater.js"></script>
 <script>
     window.addEventListener('load', () => {
+        // Load elements with default floater class and default container id
         new ElFloaterLoader()
+        // Load elements with custom floater class and default container id
         new ElFloaterLoader('.custom-floater-class')
+        // Load elements with default floater class and custom container id
         new ElFloaterLoader(null, '#custom-container-id')
+        // Load elements with custom floater class and custom container id
+        new ElFloaterLoader('.custom-floater-class', '#custom-container-id')
     })
 </script>
 ```

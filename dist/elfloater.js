@@ -1,15 +1,4 @@
 "use strict";
-/*!
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ElFloater
-
-Inspired by the original DVD logo screensaver.
-Work in progress.
-
-Todo/Ideas:
--
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
 class ElFloaterLoader {
     static #DEFAULT = {
         ELE_SELECTOR: '.elfloater',
@@ -60,8 +49,10 @@ class ElFloaterElement {
         this.#ele = ele;
         this.#ele_w = ele_rect.width;
         this.#ele_h = ele_rect.height;
-        this.#ele_pos_x = (ele.dataset['posX']) ? Math.max(0, Number(ele.dataset['posX'])) : ElFloaterUtil.random_int(0, (this.#con_w * .9) - this.#ele_w);
-        this.#ele_pos_y = (ele.dataset['posY']) ? Math.max(0, Number(ele.dataset['posY'])) : ElFloaterUtil.random_int(0, (this.#con_h * .9) - this.#ele_h);
+        const max_pos_x = (this.#con_w * .9) - this.#ele_w;
+        const max_pos_y = (this.#con_h * .9) - this.#ele_h;
+        this.#ele_pos_x = (ele.dataset['posX']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['posX']), 0, max_pos_x) : ElFloaterUtil.random_int(0, max_pos_x);
+        this.#ele_pos_y = (ele.dataset['posY']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['posY']), 0, max_pos_y) : ElFloaterUtil.random_int(0, max_pos_y);
         this.#ele_vel_x = (ele.dataset['velX']) ? Number(ele.dataset['velX']) : ElFloaterElement.#DEFAULT.ELE_VEL_X;
         this.#ele_vel_y = (ele.dataset['velY']) ? Number(ele.dataset['velY']) : ElFloaterElement.#DEFAULT.ELE_VEL_Y;
         this.#raf = {
@@ -130,5 +121,8 @@ class ElFloaterUtil {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+    static clamp_number(num, min, max) {
+        return Math.max(min, Math.min(num, max));
     }
 }
