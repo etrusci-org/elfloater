@@ -34,7 +34,6 @@ class ElFloaterLoader
 
 class ElFloaterElement
 {
-
     static #DEFAULT: {
         ELE_VEL_X: number
         ELE_VEL_Y: number
@@ -42,6 +41,9 @@ class ElFloaterElement
         ELE_FLIP_Y: boolean
         ELE_SCALE_X: number
         ELE_SCALE_Y: number
+        ELE_RANDOM_COLOR: boolean
+        ELE_RANDOM_COLOR_RGB_MIN: number
+        ELE_RANDOM_COLOR_RGB_MAX: number
     } = {
         ELE_VEL_X: 0.5,
         ELE_VEL_Y: 0.5,
@@ -49,6 +51,9 @@ class ElFloaterElement
         ELE_FLIP_Y: false,
         ELE_SCALE_X: 1,
         ELE_SCALE_Y: 1,
+        ELE_RANDOM_COLOR: false,
+        ELE_RANDOM_COLOR_RGB_MIN: 0,
+        ELE_RANDOM_COLOR_RGB_MAX: 255,
     }
 
     #fps: number = 60
@@ -68,6 +73,9 @@ class ElFloaterElement
     #ele_flip_y: boolean
     #ele_scale_x: number
     #ele_scale_y: number
+    #ele_random_color: boolean
+    #ele_random_color_rgb_min: number
+    #ele_random_color_rgb_max: number
 
     #raf: {
         previous_time: number
@@ -103,11 +111,16 @@ class ElFloaterElement
         this.#ele_vel_x = (ele.dataset['velX']) ? Number(ele.dataset['velX']) : ElFloaterElement.#DEFAULT.ELE_VEL_X
         this.#ele_vel_y = (ele.dataset['velY']) ? Number(ele.dataset['velY']) : ElFloaterElement.#DEFAULT.ELE_VEL_Y
 
-        this.#ele_flip_x = (ele.dataset['flipX']) ? Boolean(ele.dataset['flipX']) : ElFloaterElement.#DEFAULT.ELE_FLIP_X
-        this.#ele_flip_y = (ele.dataset['flipY']) ? Boolean(ele.dataset['flipY']) : ElFloaterElement.#DEFAULT.ELE_FLIP_Y
+        this.#ele_flip_x = (String(ele.dataset['flipX']).toLowerCase() === 'true') ? true : ElFloaterElement.#DEFAULT.ELE_FLIP_X
+        this.#ele_flip_y = (String(ele.dataset['flipY']).toLowerCase() === 'true') ? true : ElFloaterElement.#DEFAULT.ELE_FLIP_Y
 
         this.#ele_scale_x = ElFloaterElement.#DEFAULT.ELE_SCALE_X
         this.#ele_scale_y = ElFloaterElement.#DEFAULT.ELE_SCALE_Y
+
+        this.#ele_random_color = (String(ele.dataset['randomColor']).toLowerCase() === 'true') ? true : ElFloaterElement.#DEFAULT.ELE_RANDOM_COLOR
+
+        this.#ele_random_color_rgb_min = ElFloaterElement.#DEFAULT.ELE_RANDOM_COLOR_RGB_MIN
+        this.#ele_random_color_rgb_max = ElFloaterElement.#DEFAULT.ELE_RANDOM_COLOR_RGB_MAX
 
         this.#raf = {
             previous_time: performance.now(),
@@ -179,27 +192,51 @@ class ElFloaterElement
 
     #handle_ele_collision(): void
     {
-        if (this.#ele_pos_x + this.#ele_w > this.#con_w) {
+        if (this.#ele_pos_x + this.#ele_w >= this.#con_w) {
             this.#ele_pos_x = this.#con_w - this.#ele_w
             this.#ele_vel_x = -this.#ele_vel_x
-            if (this.#ele_flip_x) this.#ele_scale_x = -1
+            if (this.#ele_flip_x) this.#flip_ele('x')
+            if (this.#ele_random_color) this.#randomize_ele_text_color()
         }
-        else if (this.#ele_pos_x < 0) {
+        else if (this.#ele_pos_x <= 0) {
             this.#ele_pos_x = 0
             this.#ele_vel_x = -this.#ele_vel_x
-            if (this.#ele_flip_x) this.#ele_scale_x = 1
+            if (this.#ele_flip_x) this.#restore_flipped_ele('x')
+            if (this.#ele_random_color) this.#randomize_ele_text_color()
         }
 
-        if (this.#ele_pos_y + this.#ele_h > this.#con_h) {
+        if (this.#ele_pos_y + this.#ele_h >= this.#con_h) {
             this.#ele_pos_y = this.#con_h - this.#ele_h
             this.#ele_vel_y = -this.#ele_vel_y
-            if (this.#ele_flip_y) this.#ele_scale_y = -1
+            if (this.#ele_flip_y) this.#flip_ele('y')
+            if (this.#ele_random_color) this.#randomize_ele_text_color()
         }
-        else if (this.#ele_pos_y < 0) {
+        else if (this.#ele_pos_y <= 0) {
             this.#ele_pos_y = 0
             this.#ele_vel_y = -this.#ele_vel_y
-            if (this.#ele_flip_y) this.#ele_scale_y = 1
+            if (this.#ele_flip_y) this.#restore_flipped_ele('y')
+            if (this.#ele_random_color) this.#randomize_ele_text_color()
         }
+    }
+
+
+    #flip_ele(axis: 'x'|'y'): void
+    {
+        if (axis == 'x') this.#ele_scale_x = -1
+        if (axis == 'y') this.#ele_scale_y = -1
+    }
+
+
+    #restore_flipped_ele(axis: 'x'|'y'): void
+    {
+        if (axis == 'x') this.#ele_scale_x = 1
+        if (axis == 'y') this.#ele_scale_y = 1
+    }
+
+
+    #randomize_ele_text_color(): void
+    {
+        this.#ele.style.color = `rgb(${ElFloaterUtil.random_int(this.#ele_random_color_rgb_min, this.#ele_random_color_rgb_max)} ${ElFloaterUtil.random_int(this.#ele_random_color_rgb_min, this.#ele_random_color_rgb_max)} ${ElFloaterUtil.random_int(this.#ele_random_color_rgb_min, this.#ele_random_color_rgb_max)})`
     }
 }
 

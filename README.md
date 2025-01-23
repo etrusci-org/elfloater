@@ -78,21 +78,22 @@ The following options can be passed via data attributes. The order does not matt
 - *float* `data-pos-y`: Vertical start position
 - *boolean* `data-flip-x`: Flip horizontal axis on collision
 - *boolean* `data-flip-y`: Flip vertical axis on collision
-
+- *boolean* `data-random-color`: Randomize text color of element on collision
 
 ```html
 <img class="elfloater" src="./asset/dvd.png">
 
-<img class="elfloater" src="./asset/test.png" data-vel-x="0.5" data-vel-y="2" data-flip-x="true" data-flip-y="true">
+<img class="elfloater" src="./asset/test.png" data-vel-x="1" data-vel-y="1.5" data-flip-x="true" data-flip-y="true">
 
-<button class="elfloater" data-vel-x="-1" data-vel-y="1">
+<span class="elfloater" data-random-color="true">
     Any HTMLElement<br>
     should work
-</button>
+</span>
 
 <div class="custom-floater-class" data-vel-x="0" data-pos-x="200" data-pos-y="100">
     Custom selector
 </div>
+
 ```
 
 

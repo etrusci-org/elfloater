@@ -30,6 +30,9 @@ class ElFloaterElement {
         ELE_FLIP_Y: false,
         ELE_SCALE_X: 1,
         ELE_SCALE_Y: 1,
+        ELE_RANDOM_COLOR: false,
+        ELE_RANDOM_COLOR_RGB_MIN: 0,
+        ELE_RANDOM_COLOR_RGB_MAX: 255,
     };
     #fps = 60;
     #con;
@@ -46,6 +49,9 @@ class ElFloaterElement {
     #ele_flip_y;
     #ele_scale_x;
     #ele_scale_y;
+    #ele_random_color;
+    #ele_random_color_rgb_min;
+    #ele_random_color_rgb_max;
     #raf;
     constructor(ele, con) {
         this.#con = con;
@@ -63,10 +69,13 @@ class ElFloaterElement {
         this.#ele_pos_y = (ele.dataset['posY']) ? ElFloaterUtil.clamp_number(Number(ele.dataset['posY']), 0, max_pos_y) : ElFloaterUtil.random_int(0, max_pos_y);
         this.#ele_vel_x = (ele.dataset['velX']) ? Number(ele.dataset['velX']) : ElFloaterElement.#DEFAULT.ELE_VEL_X;
         this.#ele_vel_y = (ele.dataset['velY']) ? Number(ele.dataset['velY']) : ElFloaterElement.#DEFAULT.ELE_VEL_Y;
-        this.#ele_flip_x = (ele.dataset['flipX']) ? Boolean(ele.dataset['flipX']) : ElFloaterElement.#DEFAULT.ELE_FLIP_X;
-        this.#ele_flip_y = (ele.dataset['flipY']) ? Boolean(ele.dataset['flipY']) : ElFloaterElement.#DEFAULT.ELE_FLIP_Y;
+        this.#ele_flip_x = (String(ele.dataset['flipX']).toLowerCase() === 'true') ? true : ElFloaterElement.#DEFAULT.ELE_FLIP_X;
+        this.#ele_flip_y = (String(ele.dataset['flipY']).toLowerCase() === 'true') ? true : ElFloaterElement.#DEFAULT.ELE_FLIP_Y;
         this.#ele_scale_x = ElFloaterElement.#DEFAULT.ELE_SCALE_X;
         this.#ele_scale_y = ElFloaterElement.#DEFAULT.ELE_SCALE_Y;
+        this.#ele_random_color = (String(ele.dataset['randomColor']).toLowerCase() === 'true') ? true : ElFloaterElement.#DEFAULT.ELE_RANDOM_COLOR;
+        this.#ele_random_color_rgb_min = ElFloaterElement.#DEFAULT.ELE_RANDOM_COLOR_RGB_MIN;
+        this.#ele_random_color_rgb_max = ElFloaterElement.#DEFAULT.ELE_RANDOM_COLOR_RGB_MAX;
         this.#raf = {
             previous_time: performance.now(),
             frame_interval: 1_000 / this.#fps,
@@ -110,30 +119,53 @@ class ElFloaterElement {
         this.#ele_pos_y += this.#ele_vel_y * this.#raf.elapsed_time_multiplier;
     }
     #handle_ele_collision() {
-        if (this.#ele_pos_x + this.#ele_w > this.#con_w) {
+        if (this.#ele_pos_x + this.#ele_w >= this.#con_w) {
             this.#ele_pos_x = this.#con_w - this.#ele_w;
             this.#ele_vel_x = -this.#ele_vel_x;
             if (this.#ele_flip_x)
-                this.#ele_scale_x = -1;
+                this.#flip_ele('x');
+            if (this.#ele_random_color)
+                this.#randomize_ele_text_color();
         }
-        else if (this.#ele_pos_x < 0) {
+        else if (this.#ele_pos_x <= 0) {
             this.#ele_pos_x = 0;
             this.#ele_vel_x = -this.#ele_vel_x;
             if (this.#ele_flip_x)
-                this.#ele_scale_x = 1;
+                this.#restore_flipped_ele('x');
+            if (this.#ele_random_color)
+                this.#randomize_ele_text_color();
         }
-        if (this.#ele_pos_y + this.#ele_h > this.#con_h) {
+        if (this.#ele_pos_y + this.#ele_h >= this.#con_h) {
             this.#ele_pos_y = this.#con_h - this.#ele_h;
             this.#ele_vel_y = -this.#ele_vel_y;
             if (this.#ele_flip_y)
-                this.#ele_scale_y = -1;
+                this.#flip_ele('y');
+            if (this.#ele_random_color)
+                this.#randomize_ele_text_color();
         }
-        else if (this.#ele_pos_y < 0) {
+        else if (this.#ele_pos_y <= 0) {
             this.#ele_pos_y = 0;
             this.#ele_vel_y = -this.#ele_vel_y;
             if (this.#ele_flip_y)
-                this.#ele_scale_y = 1;
+                this.#restore_flipped_ele('y');
+            if (this.#ele_random_color)
+                this.#randomize_ele_text_color();
         }
+    }
+    #flip_ele(axis) {
+        if (axis == 'x')
+            this.#ele_scale_x = -1;
+        if (axis == 'y')
+            this.#ele_scale_y = -1;
+    }
+    #restore_flipped_ele(axis) {
+        if (axis == 'x')
+            this.#ele_scale_x = 1;
+        if (axis == 'y')
+            this.#ele_scale_y = 1;
+    }
+    #randomize_ele_text_color() {
+        this.#ele.style.color = `rgb(${ElFloaterUtil.random_int(this.#ele_random_color_rgb_min, this.#ele_random_color_rgb_max)} ${ElFloaterUtil.random_int(this.#ele_random_color_rgb_min, this.#ele_random_color_rgb_max)} ${ElFloaterUtil.random_int(this.#ele_random_color_rgb_min, this.#ele_random_color_rgb_max)})`;
     }
 }
 class ElFloaterUtil {

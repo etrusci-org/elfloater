@@ -43,12 +43,13 @@
         }
 
         #elfloater-container {
-            background-color: #663399;
+            background-color: rebeccapurple;
         }
 
         .elfloater,
         .custom-floater-class {
-            border: 1px solid #ec5bcc;
+            border: 1px solid pink;
+            transition: color 0.25s linear;
         }
     </style>
 
@@ -67,12 +68,12 @@
 
     <img class="elfloater" src="./asset/dvd.png">
 
-    <img class="elfloater" src="./asset/test.png" data-vel-x="0.5" data-vel-y="2" data-flip-x="true" data-flip-y="true">
+    <img class="elfloater" src="./asset/test.png" data-vel-x="1" data-vel-y="1.5" data-flip-x="true" data-flip-y="true">
 
-    <button class="elfloater" data-vel-x="-1" data-vel-y="1">
+    <span class="elfloater" data-random-color="true">
         Any HTMLElement<br>
         should work
-    </button>
+    </span>
 
     <div class="custom-floater-class" data-vel-x="0" data-pos-x="200" data-pos-y="100">
         Custom selector
