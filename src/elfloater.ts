@@ -38,9 +38,17 @@ class ElFloaterElement
     static #DEFAULT: {
         ELE_VEL_X: number
         ELE_VEL_Y: number
+        ELE_FLIP_X: boolean
+        ELE_FLIP_Y: boolean
+        ELE_SCALE_X: number
+        ELE_SCALE_Y: number
     } = {
         ELE_VEL_X: 0.5,
         ELE_VEL_Y: 0.5,
+        ELE_FLIP_X: false,
+        ELE_FLIP_Y: false,
+        ELE_SCALE_X: 1,
+        ELE_SCALE_Y: 1,
     }
 
     #fps: number = 60
@@ -56,6 +64,10 @@ class ElFloaterElement
     #ele_pos_y: number
     #ele_vel_x: number
     #ele_vel_y: number
+    #ele_flip_x: boolean
+    #ele_flip_y: boolean
+    #ele_scale_x: number
+    #ele_scale_y: number
 
     #raf: {
         previous_time: number
@@ -91,6 +103,12 @@ class ElFloaterElement
         this.#ele_vel_x = (ele.dataset['velX']) ? Number(ele.dataset['velX']) : ElFloaterElement.#DEFAULT.ELE_VEL_X
         this.#ele_vel_y = (ele.dataset['velY']) ? Number(ele.dataset['velY']) : ElFloaterElement.#DEFAULT.ELE_VEL_Y
 
+        this.#ele_flip_x = (ele.dataset['flipX']) ? Boolean(ele.dataset['flipX']) : ElFloaterElement.#DEFAULT.ELE_FLIP_X
+        this.#ele_flip_y = (ele.dataset['flipY']) ? Boolean(ele.dataset['flipY']) : ElFloaterElement.#DEFAULT.ELE_FLIP_Y
+
+        this.#ele_scale_x = ElFloaterElement.#DEFAULT.ELE_SCALE_X
+        this.#ele_scale_y = ElFloaterElement.#DEFAULT.ELE_SCALE_Y
+
         this.#raf = {
             previous_time: performance.now(),
             frame_interval: 1_000 / this.#fps,
@@ -98,7 +116,7 @@ class ElFloaterElement
             elapsed_time: 0,
         }
 
-        console.debug(`[ElFloaterElement] vel_x=${this.#ele_vel_x} vel_y=${this.#ele_vel_y} pos_x=${this.#ele_pos_x} pos_y=${this.#ele_pos_y} ele=${this.#ele}`)
+        console.debug('[ElFloaterElement]', this)
 
         this.#move_ele()
         this.#float()
@@ -148,7 +166,7 @@ class ElFloaterElement
 
     #move_ele(): void
     {
-        this.#ele.style.setProperty('transform', `translate(${this.#ele_pos_x}px, ${this.#ele_pos_y}px)`)
+        this.#ele.style.setProperty('transform', `translate(${this.#ele_pos_x}px, ${this.#ele_pos_y}px) scale(${this.#ele_scale_x}, ${this.#ele_scale_y})`)
     }
 
 
@@ -164,19 +182,23 @@ class ElFloaterElement
         if (this.#ele_pos_x + this.#ele_w > this.#con_w) {
             this.#ele_pos_x = this.#con_w - this.#ele_w
             this.#ele_vel_x = -this.#ele_vel_x
+            if (this.#ele_flip_x) this.#ele_scale_x = -1
         }
         else if (this.#ele_pos_x < 0) {
             this.#ele_pos_x = 0
             this.#ele_vel_x = -this.#ele_vel_x
+            if (this.#ele_flip_x) this.#ele_scale_x = 1
         }
 
         if (this.#ele_pos_y + this.#ele_h > this.#con_h) {
             this.#ele_pos_y = this.#con_h - this.#ele_h
             this.#ele_vel_y = -this.#ele_vel_y
+            if (this.#ele_flip_y) this.#ele_scale_y = -1
         }
         else if (this.#ele_pos_y < 0) {
             this.#ele_pos_y = 0
             this.#ele_vel_y = -this.#ele_vel_y
+            if (this.#ele_flip_y) this.#ele_scale_y = 1
         }
     }
 }

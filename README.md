@@ -32,7 +32,9 @@ Default selector for the container is an **id** named `elfloater-container`. The
 Add CSS for the container.
 
 ```css
-/* Option 1: Use whole viewport */
+/* Option 1:
+Use whole viewport
+*/
 #elfloater-container {
     position: absolute;
     top: 0;
@@ -41,7 +43,9 @@ Add CSS for the container.
     height: 100vh;
 }
 
-/* Option 2: Fixed width/height but scales down for smaller viewport */
+/* Option 2:
+Fixed width/height but scales down for smaller viewport
+*/
 #elfloater-container {
     position: absolute;
     top: 0;
@@ -52,7 +56,9 @@ Add CSS for the container.
     max-height: 100%;
 }
 
-/* For option 1 you maybe also want to add this */
+/* For option 1:
+You maybe also want to add this to prevent automatic scrollbars on collison
+*/
 body {
     padding: 0;
     margin: 0;
@@ -70,20 +76,22 @@ The following options can be passed via data attributes. The order does not matt
 - *float* `data-vel-y`: Vertical velocity
 - *float* `data-pos-x`: Horizontal start position
 - *float* `data-pos-y`: Vertical start position
+- *boolean* `data-flip-x`: Flip horizontal axis on collision
+- *boolean* `data-flip-y`: Flip vertical axis on collision
+
 
 ```html
 <img class="elfloater" src="./asset/dvd.png">
 
-<img class="elfloater" src="./asset/test.png" data-vel-x="0.5" data-vel-y="3">
+<img class="elfloater" src="./asset/test.png" data-vel-x="0.5" data-vel-y="2" data-flip-x="true" data-flip-y="true">
 
-<button class="elfloater" data-vel-x="-1" data-vel-y="0">
+<button class="elfloater" data-vel-x="-1" data-vel-y="1">
     Any HTMLElement<br>
-    should work.
+    should work
 </button>
 
 <div class="custom-floater-class" data-vel-x="0" data-pos-x="200" data-pos-y="100">
-    Custom floater class<br>
-    Fixed start position
+    Custom selector
 </div>
 ```
 
@@ -100,10 +108,13 @@ The following options can be passed via data attributes. The order does not matt
     window.addEventListener('load', () => {
         // Load elements with default floater class and default container id
         new ElFloaterLoader()
+
         // Load elements with custom floater class and default container id
         new ElFloaterLoader('.custom-floater-class')
+
         // Load elements with default floater class and custom container id
         new ElFloaterLoader(null, '#custom-container-id')
+
         // Load elements with custom floater class and custom container id
         new ElFloaterLoader('.custom-floater-class', '#custom-container-id')
     })

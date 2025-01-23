@@ -6,13 +6,30 @@
     <meta name="color-scheme" content="dark light">
 
     <style>
-        /* REQUIRED */
+        body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* full viewport container */
+        /*
         #elfloater-container {
             position: absolute;
             top: 0;
             left: 0;
-            /* width: 100vw;
-            height: 100vh; */
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        */
+
+        /* fixed width/height container */
+        #elfloater-container {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 840px;
             height: 420px;
             max-width: 100%;
@@ -21,31 +38,28 @@
 
         /* DEMO COSMETICS ONLY */
         body {
-            padding: 0;
-            margin: 0;
-            overflow: hidden;
-            color: #ccc;
-            background-color: black;
+            font-family: sans-serif;
+            color: #fff;
         }
 
         #elfloater-container {
-            background-color: rebeccapurple;
+            background-color: #663399;
         }
 
         .elfloater,
         .custom-floater-class {
-            border: 1px solid pink;
+            border: 1px solid #ec5bcc;
         }
     </style>
 
     <title>ElFloater Demo</title>
 </head>
 <body>
-
     <!-- Container -->
 
     <div id="elfloater-container">
-        floaters will be limited to this container
+        Floaters will be limited to this container.
+        See README and the source-code of this file to get started.
     </div>
 
 
@@ -53,9 +67,9 @@
 
     <img class="elfloater" src="./asset/dvd.png">
 
-    <img class="elfloater" src="./asset/test.png" data-vel-x="0.5" data-vel-y="3">
+    <img class="elfloater" src="./asset/test.png" data-vel-x="0.5" data-vel-y="2" data-flip-x="true" data-flip-y="true">
 
-    <button class="elfloater" data-vel-x="-1" data-vel-y="0">
+    <button class="elfloater" data-vel-x="-1" data-vel-y="1">
         Any HTMLElement<br>
         should work
     </button>
