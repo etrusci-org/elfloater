@@ -206,12 +206,6 @@ class ElFloaterElement
 
 class ElFloaterUtil
 {
-    // static random_float(min: number, max: number): number
-    // {
-    //     return Math.random() * (max - min) + min
-    // }
-
-
     static random_int(min: number, max: number): number
     {
         min = Math.ceil(min);
