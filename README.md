@@ -1,14 +1,15 @@
 # ElFloater
 
-Let [HTMLElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)'s float around in a container.
-Inspired by the original DVD screensaver from the early 2000s.
+Let [HTMLElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)'s float around in a container.  
+Inspired by the original DVD screensaver from the early 2000s.  
+I use this to have a floating UFO overlay on my livestream, but you'll probably also find other use cases ;-)
 
 
 
 
 ## Usage
 
-The following shows you how to create your own HTML page with one or more floating elements.
+The following shows you how to create your own HTML page with one or more floating elements.  
 For a working demo/starter template open **[dist/demo.html](./dist/demo.html)** in your webbrowser. Works from the filesystem and does not have to be put on a webserver.
 
 Advanced users could also use the individual classes directly. Please see [./src/elfloater.ts](./src/elfloater.ts) for more.
